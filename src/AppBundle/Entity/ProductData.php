@@ -77,7 +77,7 @@ class ProductData
      * @var string
      *
      * @ORM\Column(name="decPrice", type="decimal", precision=10, scale=2)
-*/
+     */
     private $decPrice;
 
 
