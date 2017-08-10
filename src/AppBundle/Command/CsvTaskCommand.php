@@ -131,10 +131,6 @@ class CsvTaskCommand extends ContainerAwareCommand
                     $em->persist($productData);
                     $em->flush();
                 }
-
-                // Inc iterate value
-                $iterate++;
-
                 // Inc count of row
                 $row++;
             }
