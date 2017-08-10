@@ -89,12 +89,8 @@ class CsvTaskCommand extends ContainerAwareCommand
         $CHUNK_SIZE = 512;
 
         if (($handle = fopen($pathToFile, "r")) !== FALSE) {
-            // Set batchSize and Iterate for bulk inserts
-            $batchSize = 4;
-            $iterate = 0;
-
             while (($data = fgetcsv($handle, $CHUNK_SIZE, ",")) !== FALSE) {
-//                $progress->advance($CHUNK_SIZE);
+                $progress->advance($CHUNK_SIZE);
 
                 // Start from second row, because first row does not contain any data
                 if ($row > 1) {
@@ -132,28 +128,9 @@ class CsvTaskCommand extends ContainerAwareCommand
 
                     $em->persist($productData);
 
-//                    dump($data);
-
                     $em->persist($productData);
                     $em->flush();
                 }
-
-//                if (($iterate % $batchSize) === 0) {
-//                    try {
-//                        $em->flush(); // Executes all updates.
-//                        $em->clear(); // Detaches all objects from Doctrine!
-//                    }
-//                    catch (UniqueConstraintViolationException $e) {
-//                        dump($e->getMessage());
-//
-//                        if (!$em->isOpen()) {
-//                            $em = $em->create(
-//                                $em->getConnection(),
-//                                $em->getConfiguration()
-//                            );
-//                        }
-//                    }
-//                }
 
                 // Inc iterate value
                 $iterate++;
