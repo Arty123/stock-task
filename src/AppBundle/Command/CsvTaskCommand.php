@@ -39,6 +39,7 @@ class CsvTaskCommand extends ContainerAwareCommand
             ->setHelp("Run tasks in Entity Task")
         ;
     }
+
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
@@ -66,7 +67,7 @@ class CsvTaskCommand extends ContainerAwareCommand
 
         if (($handle = fopen($dir."stock.csv", "r")) !== FALSE) {
             // Set batchSize and Iterate for bulk inserts
-//            $batchSize = 20;
+//            $batchSize = 10;
 //            $iterate = 0;
 
             while (($data = fgetcsv($handle, $CHUNK_SIZE, ",")) !== FALSE) {
@@ -75,9 +76,13 @@ class CsvTaskCommand extends ContainerAwareCommand
                 // Start from second row, because first row does not contain any data
                 if ($row > 1) {
                     // Convert charset of any string in data array
-                    foreach ($data as &$item) {
-                        mb_convert_encoding($item, 'UTF-8', 'auto');
+                    for ($i = 0; $i<count($data); $i++) {
+                        $data[$i] = mb_convert_encoding($data[$i], 'ASCII', 'auto');
                     }
+
+                    dump($data);
+
+                    break;
                 }
 
 //                if (($iterate % $batchSize) === 0) {
