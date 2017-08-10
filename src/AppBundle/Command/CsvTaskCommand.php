@@ -15,7 +15,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputDefinition;
-use AppBundle\Entity\StockQuotes;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use AppBundle\Entity\ProductData;
 
 /**
  * Class TaskCommand
@@ -41,22 +42,44 @@ class CsvTaskCommand extends ContainerAwareCommand
     }
 
     /**
+     * @param $data
+     */
+    protected function convertCharset(&$data)
+    {
+        // Stock.csv has ASCII charset and so we need to encode all of data in ASCII
+        // Some products has strange symbols in name field in UTF-8 charset
+        // Convert of this fields gives symbol '?', and I don't know what I should to do with it
+        for ($i = 0; $i < count($data); $i++) {
+            $data[$i] = trim(mb_convert_encoding($data[$i], 'ASCII', 'auto'));
+        }
+    }
+
+    /**
+     * @param $data
+     */
+    protected function formatPrice(&$data) {
+        // Some prices has symbol '$'
+        $symbol = strpos($data, '$');
+
+        if ($symbol !== false) {
+            $data = substr($data, ++$symbol);
+
+        }
+    }
+
+    /**
      * @param InputInterface $input
      * @param OutputInterface $output
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // outputs multiple lines to the console (adding "\n" at the end of each line)
+        // Outputs multiple lines to the console (adding "\n" at the end of each line)
         $output->writeln('<info>Run Task</info>');
         $em = $this->getContainer()->get('doctrine')->getManager();
 
-        $dir = __DIR__."/../../../web/uploads/documents/";
+        $pathToFile = __DIR__."/../../../web/uploads/documents/stock.csv";
 
-        if (!file_exists($dir) && !is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
-
-        $FILE_SIZE = filesize($dir."stock.csv");
+        $FILE_SIZE = filesize($pathToFile);
 
         $progress = new ProgressBar($output, $FILE_SIZE);
         $progress->setFormat('debug');
@@ -65,34 +88,77 @@ class CsvTaskCommand extends ContainerAwareCommand
         // Read data
         $CHUNK_SIZE = 512;
 
-        if (($handle = fopen($dir."stock.csv", "r")) !== FALSE) {
+        if (($handle = fopen($pathToFile, "r")) !== FALSE) {
             // Set batchSize and Iterate for bulk inserts
-//            $batchSize = 10;
-//            $iterate = 0;
+            $batchSize = 4;
+            $iterate = 0;
 
             while (($data = fgetcsv($handle, $CHUNK_SIZE, ",")) !== FALSE) {
 //                $progress->advance($CHUNK_SIZE);
 
                 // Start from second row, because first row does not contain any data
                 if ($row > 1) {
-                    // Convert charset of any string in data array
-                    for ($i = 0; $i<count($data); $i++) {
-                        $data[$i] = mb_convert_encoding($data[$i], 'ASCII', 'auto');
+                    // Valid csv row have to contain 6 fields
+                    if (count($data) != 6) {
+                        continue;
                     }
 
-                    dump($data);
+                    // Convert charset of any string in data array
+                    $this->convertCharset($data);
 
-                    break;
+                    $productData = $em->getRepository('AppBundle:ProductData')
+                        ->findOneBy([
+                            'strProductCode' => $data[0]
+                            ]);
+
+                    if (!$productData) {
+                        $productData = new ProductData();
+                    }
+
+                    $productData->setStrProductCode($data[0]);
+                    $productData->setStrProductName($data[1]);
+                    $productData->setStrProductDesc($data[2]);
+
+                    if ($data[3]) {
+                        $productData->setIntStockLevel($data[3]);
+                    }
+
+                    $this->formatPrice($data[4]);
+                    $productData->setDecPrice($data[4]);
+
+                    if ($data[5] == 'yes') {
+                        $productData->setDtmDiscounted(new \DateTime('now'));
+                    }
+
+                    $em->persist($productData);
+
+//                    dump($data);
+
+                    $em->persist($productData);
+                    $em->flush();
                 }
 
 //                if (($iterate % $batchSize) === 0) {
-//                    $em->flush(); // Executes all updates.
-//                    $em->clear(); // Detaches all objects from Doctrine!
+//                    try {
+//                        $em->flush(); // Executes all updates.
+//                        $em->clear(); // Detaches all objects from Doctrine!
+//                    }
+//                    catch (UniqueConstraintViolationException $e) {
+//                        dump($e->getMessage());
+//
+//                        if (!$em->isOpen()) {
+//                            $em = $em->create(
+//                                $em->getConnection(),
+//                                $em->getConfiguration()
+//                            );
+//                        }
+//                    }
 //                }
-                // Inc iterate value
-//                ++$iterate;
-                // Inc count of row
 
+                // Inc iterate value
+                $iterate++;
+
+                // Inc count of row
                 $row++;
             }
 
