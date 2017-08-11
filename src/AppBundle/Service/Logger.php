@@ -12,11 +12,6 @@ namespace AppBundle\Service;
 class Logger
 {
     /**
-     * @var mixed
-     */
-    private $dataCode;
-
-    /**
      * @var array
      */
     public static $logger = [
@@ -29,6 +24,11 @@ class Logger
         'discounted_items' => [],
         'success' => 0
     ];
+
+    /**
+     * @var mixed
+     */
+    private $dataCode;
 
     /**
      * @param array $data
@@ -52,21 +52,21 @@ class Logger
     /**
      * Log fail rules item.
      */
-    public function failImportRulesLog()
+    public function failImportRulesLog($message)
     {
         self::$logger['fail']['fail_total']++;
         self::$logger['success'] = self::$logger['total'] - self::$logger['fail']['fail_total'];
-        array_push(self::$logger['fail']['fail_import_rules'], $this->dataCode);
+        array_push(self::$logger['fail']['fail_import_rules'], $this->dataCode.' '.$message);
     }
 
     /**
      * Log broken data item.
      */
-    public function failBrokenDataLog()
+    public function failBrokenDataLog($message)
     {
         self::$logger['fail']['fail_total']++;
         self::$logger['success'] = self::$logger['total'] - self::$logger['fail']['fail_total'];
-        array_push(self::$logger['fail']['fail_broken_data'], $this->dataCode);
+        array_push(self::$logger['fail']['fail_broken_data'], $this->dataCode.' '.$message);
     }
 
     /**

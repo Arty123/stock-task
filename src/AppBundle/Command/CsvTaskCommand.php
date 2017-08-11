@@ -42,50 +42,31 @@ class CsvTaskCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param $data
-     */
-    protected function convertCharset(&$data)
-    {
-        // Stock.csv has ASCII charset and so we need to encode all of data in ASCII
-        // Some products has strange symbols in name field in UTF-8 charset
-        // Convert of this fields gives symbol '?', and I don't know what I should to do with it
-        for ($i = 0; $i < count($data); $i++) {
-            $data[$i] = trim(mb_convert_encoding($data[$i], 'ASCII', 'auto'));
-        }
-    }
-    /**
-     * @param $data
-     */
-    protected function formatPrice(&$data) {
-        // Some prices has symbol '$'
-        $symbol = strpos($data, '$');
-        if ($symbol !== false) {
-            $data = substr($data, ++$symbol);
-        }
-    }
-
-    /**
      * @param InputInterface $input
      * @param OutputInterface $output
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // Services
+        // Define services
         $validator = $this->getContainer()->get('app.validator');
         $logger = $this->getContainer()->get('app.logger');
+        $converter = $this->getContainer()->get('app.converter');
 
-        // Outputs multiple lines to the console (adding "\n" at the end of each line)
-        $output->writeln('<info>Run Task</info>');
+        // Define EntityManager
         $em = $this->getContainer()->get('doctrine')->getManager();
 
+        // Variable
         $pathToFile = __DIR__."/../../../web/uploads/documents/stock.csv";
 
+        // Enabling progress bar
         $FILE_SIZE = filesize($pathToFile);
-
         $progress = new ProgressBar($output, $FILE_SIZE);
         $progress->setFormat('debug');
 
+        // Equals 1, because 0 row contain headers of table
         $row = 1;
+
+        $output->writeln('<info>Run Task</info>');
 
         // Read data
         if (($handle = fopen($pathToFile, "r")) !== FALSE) {
@@ -95,43 +76,50 @@ class CsvTaskCommand extends ContainerAwareCommand
                 // Start from second row, because first row does not contain any data
                 if ($row > 1) {
 
+                    // Always log any data, even not valid
                     $logger->init($data);
 
                     // Initialize validator with current data and check
                     if ($validator->init($data) && $validator->validateImportRules()) {
 
                         // Convert charset of any string in data array
-                        $this->convertCharset($data);
+                        $converter->convertCharset($data);
 
+                        // Find existing item in database
                         $productData = $em->getRepository('AppBundle:ProductData')
                             ->findOneBy([
                                 'strProductCode' => $data[0]
                             ]);
 
+                        // If item doesn't exist, create it
                         if (!$productData) {
                             $productData = new ProductData();
                         }
 
+                        // Set item's properties
                         $productData->setStrProductCode($data[0]);
                         $productData->setStrProductName($data[1]);
                         $productData->setStrProductDesc($data[2]);
 
-                        if ($data[3]) {
+                        // Some stock fields has no data
+                        if ($data[3] != '') {
                             $productData->setIntStockLevel($data[3]);
                         }
 
-                        $this->formatPrice($data[4]);
                         $productData->setDecPrice($data[4]);
 
+                        // Check discounted field
                         if ($data[5] == 'yes') {
                             $productData->setDtmDiscounted(new \DateTime('now'));
                         }
 
+                        // Insert or update item
                         $em->persist($productData);
                         $em->flush();
                     }
                 }
 
+                // Clear EntityManager
                 if ($row % 5 == 0) {
                     $em->clear();
                 }
@@ -145,7 +133,6 @@ class CsvTaskCommand extends ContainerAwareCommand
             fclose($handle);
         }
 
-        dump($logger::$logger);
         $output->writeln('');
         $output->writeln('<info>Done!</info>');
     }

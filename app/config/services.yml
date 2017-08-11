@@ -14,3 +14,7 @@ services:
     app.validator:
         class:     AppBundle\Service\Validator
         arguments: ['@app.logger']
+
+    app.converter:
+        class:     AppBundle\Service\Converter
+        arguments: []
