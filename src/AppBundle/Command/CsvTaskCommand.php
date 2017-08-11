@@ -47,7 +47,7 @@ class CsvTaskCommand extends ContainerAwareCommand
      * @param Logger $logger
      * @return array
      */
-    private function getOutputTableBody(Logger $logger)
+    private function getFailItemsTableBody(Logger $logger)
     {
         $tempArray = [];
         $failImportRulesArray = $logger::$logger['fail']['fail_import_rules'];
@@ -77,6 +77,20 @@ class CsvTaskCommand extends ContainerAwareCommand
                     array_push($tempArray[$i], '');
                 }
             }
+        }
+
+        return $tempArray;
+    }
+
+    /**
+     * @param Logger $logger
+     * @return array
+     */
+    private function getDiscountedItemsTableBody(Logger $logger) {
+        $tempArray = [];
+
+        foreach ($logger::$logger['discounted_items'] as $item) {
+            array_push($tempArray, [$item]);
         }
 
         return $tempArray;
@@ -119,7 +133,6 @@ class CsvTaskCommand extends ContainerAwareCommand
 
                 // Start from second row, because first row does not contain any data
                 if ($row > 1) {
-
                     // Always log any data, even not valid
                     $logger->init($data);
 
@@ -144,12 +157,7 @@ class CsvTaskCommand extends ContainerAwareCommand
                         $productData->setStrProductCode($data[0]);
                         $productData->setStrProductName($data[1]);
                         $productData->setStrProductDesc($data[2]);
-
-                        // Some stock fields has no data
-                        if ($data[3] != '') {
-                            $productData->setIntStockLevel($data[3]);
-                        }
-
+                        $productData->setIntStockLevel($data[3]);
                         $productData->setDecPrice($data[4]);
 
                         // Check discounted field
@@ -178,7 +186,7 @@ class CsvTaskCommand extends ContainerAwareCommand
             // Rendering results total
             $output->writeln('');
             $table
-                ->setHeaders(['Total', 'Success', 'Fail'])
+                ->setHeaders(['Total', 'Fail', 'Success'])
                 ->setRows([
                     [
                         $logger::$logger['total'], $logger::$logger['fail']['fail_total'], $logger::$logger['success']
@@ -187,12 +195,18 @@ class CsvTaskCommand extends ContainerAwareCommand
             $table->render();
 
             // Rendering detail results
-            $tableBody = $this->getOutputTableBody($logger);
-
-            //
+            $tableBody = $this->getFailItemsTableBody($logger);
             $output->writeln('');
             $table
                 ->setHeaders(['Fail Import Rules', 'Fail Validate data'])
+                ->setRows($tableBody);
+            $table->render();
+
+            // Rendering detail results
+            $tableBody = $this->getDiscountedItemsTableBody($logger);
+            $output->writeln('');
+            $table
+                ->setHeaders(['Discounted Items'])
                 ->setRows($tableBody);
             $table->render();
         }
