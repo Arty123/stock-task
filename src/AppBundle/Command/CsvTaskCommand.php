@@ -8,6 +8,7 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Service\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,6 +17,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputDefinition;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Symfony\Component\Console\Helper\Table;
 use AppBundle\Entity\ProductData;
 
 /**
@@ -42,6 +44,45 @@ class CsvTaskCommand extends ContainerAwareCommand
     }
 
     /**
+     * @param Logger $logger
+     * @return array
+     */
+    private function getFormatedOutputTable(Logger $logger)
+    {
+        $tempArray = [];
+        $failImportRulesArray = $logger::$logger['fail']['fail_import_rules'];
+        $failBrokenDataArray = $logger::$logger['fail']['fail_broken_data'];
+
+        if (count($failImportRulesArray) > count($failBrokenDataArray)) {
+            foreach ($failImportRulesArray as $item) {
+                array_push($tempArray, [$item]);
+            }
+
+            for ($i = 0; $i < count($tempArray); $i++) {
+                if (!empty($failBrokenDataArray[$i])) {
+                    array_push($tempArray[$i], $failBrokenDataArray[$i]);
+                } else {
+                    array_push($tempArray[$i], 'NULL');
+                }
+            }
+        } else {
+            foreach ($failBrokenDataArray as $item) {
+                array_push($tempArray, [$item]);
+            }
+
+            for ($i = 0; $i < count($tempArray); $i++) {
+                if (!empty($failImportRulesArray[$i])) {
+                    array_push($tempArray[$i], $failImportRulesArray[$i]);
+                } else {
+                    array_push($tempArray[$i], '');
+                }
+            }
+        }
+
+        return $tempArray;
+    }
+
+    /**
      * @param InputInterface $input
      * @param OutputInterface $output
      */
@@ -62,6 +103,9 @@ class CsvTaskCommand extends ContainerAwareCommand
         $FILE_SIZE = filesize($pathToFile);
         $progress = new ProgressBar($output, $FILE_SIZE);
         $progress->setFormat('debug');
+
+        // Enabling table class
+        $table = new Table($output);
 
         // Equals 1, because 0 row contain headers of table
         $row = 1;
@@ -129,8 +173,28 @@ class CsvTaskCommand extends ContainerAwareCommand
             }
 
             $progress->finish();
-
             fclose($handle);
+
+            // Rendering results total
+            $output->writeln('');
+            $table
+                ->setHeaders(['Total', 'Success', 'Fail'])
+                ->setRows([
+                    [
+                        $logger::$logger['total'], $logger::$logger['fail']['fail_total'], $logger::$logger['success']
+                    ],
+                ]);
+            $table->render();
+
+            // Rendering detail results
+            $tableBody = $this->getFormatedOutputTable($logger);
+
+            //
+            $output->writeln('');
+            $table
+                ->setHeaders(['Fail Import Rules', 'Fail Validate data'])
+                ->setRows($tableBody);
+            $table->render();
         }
 
         $output->writeln('');
