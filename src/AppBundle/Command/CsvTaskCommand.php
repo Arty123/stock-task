@@ -8,6 +8,7 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Service\Converter;
 use AppBundle\Service\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -51,6 +52,8 @@ class CsvTaskCommand extends ContainerAwareCommand
     }
 
     /**
+     * Create two columns for output table.
+     *
      * @param Logger $logger
      * @return array
      */
@@ -60,8 +63,10 @@ class CsvTaskCommand extends ContainerAwareCommand
         $failImportRulesArray = $logger::$logger['fail']['fail_import_rules'];
         $failBrokenDataArray = $logger::$logger['fail']['fail_broken_data'];
 
+        // If first column more than second
         if (count($failImportRulesArray) > count($failBrokenDataArray)) {
             foreach ($failImportRulesArray as $item) {
+                // Create first column
                 array_push($tempArray, [$item]);
             }
 
@@ -104,6 +109,53 @@ class CsvTaskCommand extends ContainerAwareCommand
         return $tempArray;
     }
 
+    /**
+     * @param Converter $converter
+     * @param $testMode
+     */
+    private function manageData(Converter $converter, $testMode, array $data)
+    {
+        // Define EntityManager
+        $em = $this->getContainer()->get('doctrine')->getManager();
+
+        // Convert charset of any string in data array
+        $converter->convertCharset($data);
+
+        // Find existing item in database
+        $productData = $em->getRepository('AppBundle:ProductData')
+            ->findOneBy([
+                'strProductCode' => $data[0]
+            ]);
+
+        // If item doesn't exist, create it
+        if (!$productData) {
+            $productData = new ProductData();
+        }
+
+        // Set item's properties
+        $productData->setStrProductCode($data[0]);
+        $productData->setStrProductName($data[1]);
+        $productData->setStrProductDesc($data[2]);
+        $productData->setIntStockLevel($data[3]);
+        $productData->setDecPrice($data[4]);
+
+        // Check discounted field
+        if ($data[5] == 'yes') {
+            $productData->setDtmDiscounted(new \DateTime('now'));
+        }
+
+        // Insert or update item if testMode off
+        if (!$testMode) {
+            $em->persist($productData);
+            $em->flush();
+        }
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @param Table $table
+     * @param Logger $logger
+     */
     private function printTables(OutputInterface $output, Table $table, Logger $logger)
     {
         // Rendering results total
@@ -148,9 +200,6 @@ class CsvTaskCommand extends ContainerAwareCommand
         $logger = $this->getContainer()->get('app.logger');
         $converter = $this->getContainer()->get('app.converter');
 
-        // Define EntityManager
-        $em = $this->getContainer()->get('doctrine')->getManager();
-
         // Variable
         $pathToFile = __DIR__."/../../../web/uploads/documents/stock.csv";
 
@@ -179,46 +228,9 @@ class CsvTaskCommand extends ContainerAwareCommand
 
                     // Initialize validator with current data and check
                     if ($validator->init($data) && $validator->validateImportRules()) {
-
-                        // Convert charset of any string in data array
-                        $converter->convertCharset($data);
-
-                        // Find existing item in database
-                        $productData = $em->getRepository('AppBundle:ProductData')
-                            ->findOneBy([
-                                'strProductCode' => $data[0]
-                            ]);
-
-                        // If item doesn't exist, create it
-                        if (!$productData) {
-                            $productData = new ProductData();
-                        }
-
-                        // Set item's properties
-                        $productData->setStrProductCode($data[0]);
-                        $productData->setStrProductName($data[1]);
-                        $productData->setStrProductDesc($data[2]);
-                        $productData->setIntStockLevel($data[3]);
-                        $productData->setDecPrice($data[4]);
-
-                        // Check discounted field
-                        if ($data[5] == 'yes') {
-                            $productData->setDtmDiscounted(new \DateTime('now'));
-                        }
-
-                        // Insert or update item if testMode off
-                        if (!$testMode) {
-                            $em->persist($productData);
-                            $em->flush();
-                        }
+                        $this->manageData($converter, $testMode, $data);
                     }
                 }
-
-                // Clear EntityManager
-                if ($row % 5 == 0) {
-                    $em->clear();
-                }
-
                 // Inc count of row
                 $row++;
             }
