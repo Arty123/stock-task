@@ -93,7 +93,8 @@ class CsvTaskCommand extends ContainerAwareCommand
      * @param Logger $logger
      * @return array
      */
-    private function getDiscountedItemsTableBody(Logger $logger) {
+    private function getDiscountedItemsTableBody(Logger $logger)
+    {
         $tempArray = [];
 
         foreach ($logger::$logger['discounted_items'] as $item) {
@@ -101,6 +102,36 @@ class CsvTaskCommand extends ContainerAwareCommand
         }
 
         return $tempArray;
+    }
+
+    private function printTables(OutputInterface $output, Table $table, Logger $logger)
+    {
+        // Rendering results total
+        $output->writeln('');
+        $table
+            ->setHeaders(['Total', 'Fail', 'Success'])
+            ->setRows([
+                [
+                    $logger::$logger['total'], $logger::$logger['fail']['fail_total'], $logger::$logger['success']
+                ],
+            ]);
+        $table->render();
+
+        // Rendering detail results
+        $tableBody = $this->getFailItemsTableBody($logger);
+        $output->writeln('');
+        $table
+            ->setHeaders(['Fail Import Rules', 'Fail Validate data'])
+            ->setRows($tableBody);
+        $table->render();
+
+        // Rendering detail results
+        $tableBody = $this->getDiscountedItemsTableBody($logger);
+        $output->writeln('');
+        $table
+            ->setHeaders(['Discounted Items'])
+            ->setRows($tableBody);
+        $table->render();
     }
 
     /**
@@ -194,34 +225,10 @@ class CsvTaskCommand extends ContainerAwareCommand
 
             $progress->finish();
             fclose($handle);
-
-            // Rendering results total
-            $output->writeln('');
-            $table
-                ->setHeaders(['Total', 'Fail', 'Success'])
-                ->setRows([
-                    [
-                        $logger::$logger['total'], $logger::$logger['fail']['fail_total'], $logger::$logger['success']
-                    ],
-                ]);
-            $table->render();
-
-            // Rendering detail results
-            $tableBody = $this->getFailItemsTableBody($logger);
-            $output->writeln('');
-            $table
-                ->setHeaders(['Fail Import Rules', 'Fail Validate data'])
-                ->setRows($tableBody);
-            $table->render();
-
-            // Rendering detail results
-            $tableBody = $this->getDiscountedItemsTableBody($logger);
-            $output->writeln('');
-            $table
-                ->setHeaders(['Discounted Items'])
-                ->setRows($tableBody);
-            $table->render();
         }
+
+        // Print tables
+        $this->printTables($output, $table, $logger);
 
         $output->writeln('');
         $output->writeln('<info>Done!</info>');
