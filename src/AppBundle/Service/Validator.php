@@ -19,7 +19,7 @@ class Validator
     /**
      * @var mixed
      */
-    private $dataName;
+    private $dataCode;
 
     /**
      * @var float
@@ -52,22 +52,22 @@ class Validator
 
     /**
      * @param array $data
+     * @return bool
      */
     public function init(array $data)
     {
         if (isset($data) && (count($data) == 6)) {
             $this->data = $data;
-            $this->dataName = $data[0];
+            $this->dataCode = $data[0];
             $this->dataPrice = (float) $data[4];
             $this->dataStock = (integer) $data[3];
             $this->dataDiscounted = $data[5];
 
-            $this->logger->init($data);
             $this->logger->increaseTotal();
 
             return true;
         } else {
-
+            dump($data);
             $this->logger->failBrokenDataLog();
             $this->logger->increaseTotal();
 
@@ -87,8 +87,6 @@ class Validator
 
         } elseif ($this->dataDiscounted == 'yes') {
             $this->logger->discountedItemsLog();
-
-            return false;
         }
 
         return true;

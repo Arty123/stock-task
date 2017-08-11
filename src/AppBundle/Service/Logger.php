@@ -14,22 +14,7 @@ class Logger
     /**
      * @var mixed
      */
-    private $dataName;
-
-    /**
-     * @var float
-     */
-    private $dataPrice;
-
-    /**
-     * @var int
-     */
-    private $dataStock;
-
-    /**
-     * @var int
-     */
-    private $dataDiscounted;
+    private $dataCode;
 
     /**
      * @var array
@@ -41,7 +26,8 @@ class Logger
             'fail_import_rules' => [],
             'fail_broken_data'  => [],
         ],
-        'discounted_items' => []
+        'discounted_items' => [],
+        'success' => 0
     ];
 
     /**
@@ -49,11 +35,8 @@ class Logger
      */
     public function init(array $data)
     {
-        if (isset($data) && (count($data) == 6)) {
-            $this->dataName = $data[0];
-            $this->dataPrice = (float) $data[4];
-            $this->dataStock = (integer) $data[3];
-            $this->dataDiscounted = $data[5];
+        if (isset($data)) {
+            $this->dataCode = $data[0];
         }
     }
 
@@ -63,6 +46,7 @@ class Logger
     public function increaseTotal()
     {
         self::$logger['total']++;
+        self::$logger['success'] = self::$logger['total'] - self::$logger['fail']['fail_total'];
     }
 
     /**
@@ -71,7 +55,8 @@ class Logger
     public function failImportRulesLog()
     {
         self::$logger['fail']['fail_total']++;
-        array_push(self::$logger['fail']['fail_import_rules'], $this->dataName);
+        self::$logger['success'] = self::$logger['total'] - self::$logger['fail']['fail_total'];
+        array_push(self::$logger['fail']['fail_import_rules'], $this->dataCode);
     }
 
     /**
@@ -80,7 +65,8 @@ class Logger
     public function failBrokenDataLog()
     {
         self::$logger['fail']['fail_total']++;
-        array_push(self::$logger['fail']['fail_broken_data'], $this->dataName);
+        self::$logger['success'] = self::$logger['total'] - self::$logger['fail']['fail_total'];
+        array_push(self::$logger['fail']['fail_broken_data'], $this->dataCode);
     }
 
     /**
@@ -88,6 +74,6 @@ class Logger
      */
     public function discountedItemsLog()
     {
-        array_push(self::$logger['discounted_items'], $this->dataName);
+        array_push(self::$logger['discounted_items'], $this->dataCode);
     }
 }

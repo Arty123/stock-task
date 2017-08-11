@@ -84,20 +84,22 @@ class CsvTaskCommand extends ContainerAwareCommand
 
         $progress = new ProgressBar($output, $FILE_SIZE);
         $progress->setFormat('debug');
+
         $row = 1;
 
         // Read data
-        $CHUNK_SIZE = 1000;
-
         if (($handle = fopen($pathToFile, "r")) !== FALSE) {
-            while (($data = fgetcsv($handle, $CHUNK_SIZE, ",")) !== FALSE) {
-                $progress->advance($CHUNK_SIZE);
+            while (($data = fgetcsv($handle, null, ",")) !== FALSE) {
+                $progress->advance($handle);
 
                 // Start from second row, because first row does not contain any data
                 if ($row > 1) {
 
+                    $logger->init($data);
+
                     // Initialize validator with current data and check
                     if ($validator->init($data) && $validator->validateImportRules()) {
+
                         // Convert charset of any string in data array
                         $this->convertCharset($data);
 
@@ -126,8 +128,6 @@ class CsvTaskCommand extends ContainerAwareCommand
                         }
 
                         $em->persist($productData);
-
-                        $em->persist($productData);
                         $em->flush();
                     }
                 }
@@ -140,12 +140,12 @@ class CsvTaskCommand extends ContainerAwareCommand
                 $row++;
             }
 
-            dump($logger::$logger);
-
             $progress->finish();
 
             fclose($handle);
         }
+
+        dump($logger::$logger);
         $output->writeln('');
         $output->writeln('<info>Done!</info>');
     }
