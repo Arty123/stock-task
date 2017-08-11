@@ -37,6 +37,13 @@ class CsvTaskCommand extends ContainerAwareCommand
             ->setDescription('Task start')
             ->addArgument('id', InputArgument::OPTIONAL, 'Task id')
             ->addArgument('start', InputArgument::OPTIONAL, 'Start position')
+            ->addOption(
+                'test',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Test option',
+                0
+            )
             // the full command description shown when running the command with
             // the "--help" option
             ->setHelp("Run tasks in Entity Task")
@@ -102,6 +109,9 @@ class CsvTaskCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // Get options
+        $testMode = $input->getOption('test');
+
         // Define services
         $validator = $this->getContainer()->get('app.validator');
         $logger = $this->getContainer()->get('app.logger');
@@ -165,9 +175,11 @@ class CsvTaskCommand extends ContainerAwareCommand
                             $productData->setDtmDiscounted(new \DateTime('now'));
                         }
 
-                        // Insert or update item
-                        $em->persist($productData);
-                        $em->flush();
+                        // Insert or update item if testMode off
+                        if (!$testMode) {
+                            $em->persist($productData);
+                            $em->flush();
+                        }
                     }
                 }
 
