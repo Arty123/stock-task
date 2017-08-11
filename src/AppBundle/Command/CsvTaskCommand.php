@@ -62,7 +62,7 @@ class CsvTaskCommand extends ContainerAwareCommand
                 if (!empty($failBrokenDataArray[$i])) {
                     array_push($tempArray[$i], $failBrokenDataArray[$i]);
                 } else {
-                    array_push($tempArray[$i], 'NULL');
+                    array_push($tempArray[$i], '');
                 }
             }
         } else {
