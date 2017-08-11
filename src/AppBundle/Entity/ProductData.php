@@ -25,21 +25,21 @@ class ProductData
     /**
      * @var string
      *
-     * @ORM\Column(name="strProductName", type="string", length=50)
+     * @ORM\Column(name="product_name", type="string", length=50)
      */
     private $strProductName;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="strProductDesc", type="string", length=255)
+     * @ORM\Column(name="product_desc", type="string", length=255)
      */
     private $strProductDesc;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="strProductCode", type="string", length=10, unique=true)
+     * @ORM\Column(name="product_code", type="string", length=10, unique=true)
      */
     private $strProductCode;
 
@@ -47,14 +47,14 @@ class ProductData
      * @var \DateTime
      *
      * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(name="dtmAdded", type="datetime", nullable=true)
+     * @ORM\Column(name="added", type="datetime", nullable=true)
      */
     private $dtmAdded;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="dtmDiscounted", type="datetime", nullable=true)
+     * @ORM\Column(name="discounted", type="datetime", nullable=true)
      */
     private $dtmDiscounted;
 
@@ -62,21 +62,21 @@ class ProductData
      * @var \DateTime
      *
      * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(name="stmTimestamp", type="datetime")
+     * @ORM\Column(name="timestamp", type="datetime")
      */
     private $stmTimestamp;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="intStockLevel", type="integer", nullable=true)
+     * @ORM\Column(name="stock_level", type="integer", nullable=true)
      */
     private $intStockLevel;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="decPrice", type="decimal", precision=10, scale=2)
+     * @ORM\Column(name="price", type="decimal", precision=10, scale=2)
      */
     private $decPrice;
 

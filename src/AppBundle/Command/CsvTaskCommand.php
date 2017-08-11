@@ -53,17 +53,14 @@ class CsvTaskCommand extends ContainerAwareCommand
             $data[$i] = trim(mb_convert_encoding($data[$i], 'ASCII', 'auto'));
         }
     }
-
     /**
      * @param $data
      */
     protected function formatPrice(&$data) {
         // Some prices has symbol '$'
         $symbol = strpos($data, '$');
-
         if ($symbol !== false) {
             $data = substr($data, ++$symbol);
-
         }
     }
 
@@ -73,6 +70,10 @@ class CsvTaskCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // Services
+        $validator = $this->getContainer()->get('app.validator');
+        $logger = $this->getContainer()->get('app.logger');
+
         // Outputs multiple lines to the console (adding "\n" at the end of each line)
         $output->writeln('<info>Run Task</info>');
         $em = $this->getContainer()->get('doctrine')->getManager();
@@ -86,7 +87,7 @@ class CsvTaskCommand extends ContainerAwareCommand
         $row = 1;
 
         // Read data
-        $CHUNK_SIZE = 512;
+        $CHUNK_SIZE = 1000;
 
         if (($handle = fopen($pathToFile, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, $CHUNK_SIZE, ",")) !== FALSE) {
@@ -94,46 +95,52 @@ class CsvTaskCommand extends ContainerAwareCommand
 
                 // Start from second row, because first row does not contain any data
                 if ($row > 1) {
-                    // Valid csv row have to contain 6 fields
-                    if (count($data) != 6) {
-                        continue;
-                    }
 
-                    // Convert charset of any string in data array
-                    $this->convertCharset($data);
+                    // Initialize validator with current data and check
+                    if ($validator->init($data) && $validator->validateImportRules()) {
+                        // Convert charset of any string in data array
+                        $this->convertCharset($data);
 
-                    $productData = $em->getRepository('AppBundle:ProductData')
-                        ->findOneBy([
-                            'strProductCode' => $data[0]
+                        $productData = $em->getRepository('AppBundle:ProductData')
+                            ->findOneBy([
+                                'strProductCode' => $data[0]
                             ]);
 
-                    if (!$productData) {
-                        $productData = new ProductData();
+                        if (!$productData) {
+                            $productData = new ProductData();
+                        }
+
+                        $productData->setStrProductCode($data[0]);
+                        $productData->setStrProductName($data[1]);
+                        $productData->setStrProductDesc($data[2]);
+
+                        if ($data[3]) {
+                            $productData->setIntStockLevel($data[3]);
+                        }
+
+                        $this->formatPrice($data[4]);
+                        $productData->setDecPrice($data[4]);
+
+                        if ($data[5] == 'yes') {
+                            $productData->setDtmDiscounted(new \DateTime('now'));
+                        }
+
+                        $em->persist($productData);
+
+                        $em->persist($productData);
+                        $em->flush();
                     }
-
-                    $productData->setStrProductCode($data[0]);
-                    $productData->setStrProductName($data[1]);
-                    $productData->setStrProductDesc($data[2]);
-
-                    if ($data[3]) {
-                        $productData->setIntStockLevel($data[3]);
-                    }
-
-                    $this->formatPrice($data[4]);
-                    $productData->setDecPrice($data[4]);
-
-                    if ($data[5] == 'yes') {
-                        $productData->setDtmDiscounted(new \DateTime('now'));
-                    }
-
-                    $em->persist($productData);
-
-                    $em->persist($productData);
-                    $em->flush();
                 }
+
+                if ($row % 5 == 0) {
+                    $em->clear();
+                }
+
                 // Inc count of row
                 $row++;
             }
+
+            dump($logger::$logger);
 
             $progress->finish();
 
