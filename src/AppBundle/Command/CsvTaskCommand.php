@@ -47,7 +47,7 @@ class CsvTaskCommand extends ContainerAwareCommand
      * @param Logger $logger
      * @return array
      */
-    private function getFormatedOutputTable(Logger $logger)
+    private function getOutputTableBody(Logger $logger)
     {
         $tempArray = [];
         $failImportRulesArray = $logger::$logger['fail']['fail_import_rules'];
@@ -187,7 +187,7 @@ class CsvTaskCommand extends ContainerAwareCommand
             $table->render();
 
             // Rendering detail results
-            $tableBody = $this->getFormatedOutputTable($logger);
+            $tableBody = $this->getOutputTableBody($logger);
 
             //
             $output->writeln('');
