@@ -14,7 +14,7 @@ use Symfony\Component\Console\Helper\Table;
 use AppBundle\Entity\ProductData;
 
 /**
- * Class TaskCommand.
+ * Class CsvTaskCommand.
  */
 class CsvTaskCommand extends ContainerAwareCommand
 {
