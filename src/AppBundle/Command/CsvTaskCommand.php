@@ -104,6 +104,7 @@ class CsvTaskCommand extends ContainerAwareCommand
     /**
      * @param Converter $converter
      * @param $testMode
+     * @param array $data
      */
     private function manageData(Converter $converter, $testMode, array $data)
     {
