@@ -5,7 +5,7 @@ namespace AppBundle\Test\Service;
 use AppBundle\Service\Converter;
 use PHPUnit\Framework\TestCase;
 
-class ConverterTest
+class ConverterTest extends TestCase
 {
     private $converter;
 
@@ -20,8 +20,9 @@ class ConverterTest
 
     public function testConvertCharset()
     {
-        $data = '$5.55';
-        $this->converter->converCharset();
-        $this->assertEquals($data, '5.55');
+        $data = ['Â'];
+        $this->assertEquals(mb_detect_encoding($data[0], 'auto'), 'UTF-8');
+        $this->converter->convertCharset($data);
+        $this->assertEquals(mb_detect_encoding($data[0], 'auto'), 'ASCII');
     }
 }
