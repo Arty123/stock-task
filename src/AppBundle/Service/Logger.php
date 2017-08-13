@@ -37,6 +37,7 @@ class Logger
     {
         if (isset($data)) {
             $this->dataCode = $data[0];
+            $this->increaseTotal();
         }
     }
 

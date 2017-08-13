@@ -76,16 +76,11 @@ class Validator
             $this->dataPrice = (float) $data[4];
             $this->dataStock = (integer) $data[3];
             $this->dataDiscounted = $data[5];
-            $this->logger->increaseTotal();
 
             return true;
-        } else {
-            // If data is not valid, then increase total and log broken data
-
-            $this->logger->increaseTotal();
-
-            return false;
         }
+
+        return false;
     }
 
     /**
