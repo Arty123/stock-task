@@ -93,11 +93,11 @@ class Validator
      */
     public function validateImportRules()
     {
-        if (($this->dataPrice < 5 && $this->dataStock < 10)) {
+        if (($this->dataPrice <= 5 && $this->dataStock <= 10)) {
             $this->logger->failImportRulesLog(self::MESSAGES['import_rules']['first_case']);
             return false;
 
-        } elseif (($this->dataPrice > 1000)) {
+        } elseif (($this->dataPrice >= 1000)) {
             $this->logger->failImportRulesLog(self::MESSAGES['import_rules']['second_case']);
             return false;
 
