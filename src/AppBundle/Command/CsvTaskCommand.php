@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: a.abelyan
- * Date: 10.08.2017
- * Time: 11:33
- */
 
 namespace AppBundle\Command;
 
@@ -16,19 +10,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputDefinition;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Console\Helper\Table;
 use AppBundle\Entity\ProductData;
 
 /**
- * Class TaskCommand
- * @package AppBundle\Command
+ * Class TaskCommand.
  */
 class CsvTaskCommand extends ContainerAwareCommand
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -47,7 +38,7 @@ class CsvTaskCommand extends ContainerAwareCommand
             )
             // the full command description shown when running the command with
             // the "--help" option
-            ->setHelp("Run tasks in Entity Task")
+            ->setHelp('Run tasks in Entity Task')
         ;
     }
 
@@ -55,6 +46,7 @@ class CsvTaskCommand extends ContainerAwareCommand
      * Create two columns for output table.
      *
      * @param Logger $logger
+     *
      * @return array
      */
     private function getFailItemsTableBody(Logger $logger)
@@ -70,7 +62,7 @@ class CsvTaskCommand extends ContainerAwareCommand
                 array_push($tempArray, [$item]);
             }
 
-            for ($i = 0; $i < count($tempArray); $i++) {
+            for ($i = 0; $i < count($tempArray); ++$i) {
                 if (!empty($failBrokenDataArray[$i])) {
                     array_push($tempArray[$i], $failBrokenDataArray[$i]);
                 } else {
@@ -82,7 +74,7 @@ class CsvTaskCommand extends ContainerAwareCommand
                 array_push($tempArray, [$item]);
             }
 
-            for ($i = 0; $i < count($tempArray); $i++) {
+            for ($i = 0; $i < count($tempArray); ++$i) {
                 if (!empty($failImportRulesArray[$i])) {
                     array_push($tempArray[$i], $failImportRulesArray[$i]);
                 } else {
@@ -96,12 +88,12 @@ class CsvTaskCommand extends ContainerAwareCommand
 
     /**
      * @param Logger $logger
+     *
      * @return array
      */
     private function getDiscountedItemsTableBody(Logger $logger)
     {
         $tempArray = [];
-
         foreach ($logger::$logger['discounted_items'] as $item) {
             array_push($tempArray, [$item]);
         }
@@ -124,7 +116,7 @@ class CsvTaskCommand extends ContainerAwareCommand
         // Find existing item in database
         $productData = $em->getRepository('AppBundle:ProductData')
             ->findOneBy([
-                'strProductCode' => $data[0]
+                'strProductCode' => $data[0],
             ]);
 
         // If item doesn't exist, create it
@@ -153,8 +145,8 @@ class CsvTaskCommand extends ContainerAwareCommand
 
     /**
      * @param OutputInterface $output
-     * @param Table $table
-     * @param Logger $logger
+     * @param Table           $table
+     * @param Logger          $logger
      */
     private function printTables(OutputInterface $output, Table $table, Logger $logger)
     {
@@ -164,7 +156,7 @@ class CsvTaskCommand extends ContainerAwareCommand
             ->setHeaders(['Total', 'Fail', 'Success'])
             ->setRows([
                 [
-                    $logger::$logger['total'], $logger::$logger['fail']['fail_total'], $logger::$logger['success']
+                    $logger::$logger['total'], $logger::$logger['fail']['fail_total'], $logger::$logger['success'],
                 ],
             ]);
         $table->render();
@@ -187,7 +179,7 @@ class CsvTaskCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -201,7 +193,7 @@ class CsvTaskCommand extends ContainerAwareCommand
         $converter = $this->getContainer()->get('app.converter');
 
         // Variable
-        $pathToFile = __DIR__."/../../../web/uploads/documents/stock.csv";
+        $pathToFile = __DIR__.'/../../../web/uploads/documents/stock.csv';
 
         // Enabling progress bar
         $FILE_SIZE = filesize($pathToFile);
@@ -217,8 +209,8 @@ class CsvTaskCommand extends ContainerAwareCommand
         $output->writeln('<info>Run Task</info>');
 
         // Read data
-        if (($handle = fopen($pathToFile, "r")) !== FALSE) {
-            while (($data = fgetcsv($handle, null, ",")) !== FALSE) {
+        if (($handle = fopen($pathToFile, 'r')) !== false) {
+            while (($data = fgetcsv($handle, null, ',')) !== false) {
                 $progress->advance($handle);
 
                 // Start from second row, because first row does not contain any data
@@ -232,7 +224,7 @@ class CsvTaskCommand extends ContainerAwareCommand
                     }
                 }
                 // Inc count of row
-                $row++;
+                ++$row;
             }
 
             $progress->finish();

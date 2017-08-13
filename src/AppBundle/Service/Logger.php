@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: a.abelyan
  * Date: 11.08.2017
- * Time: 11:23
+ * Time: 11:23.
  */
 
 namespace AppBundle\Service;
-
 
 class Logger
 {
@@ -16,13 +15,13 @@ class Logger
      */
     public static $logger = [
         'total' => 0,
-        'fail'  => [
+        'fail' => [
             'fail_total' => 0,
             'fail_import_rules' => [],
-            'fail_broken_data'  => [],
+            'fail_broken_data' => [],
         ],
         'discounted_items' => [],
-        'success' => 0
+        'success' => 0,
     ];
 
     /**
@@ -46,7 +45,7 @@ class Logger
      */
     public function increaseTotal()
     {
-        self::$logger['total']++;
+        ++self::$logger['total'];
         self::$logger['success'] = self::$logger['total'] - self::$logger['fail']['fail_total'];
     }
 
@@ -55,7 +54,7 @@ class Logger
      */
     public function failImportRulesLog($message)
     {
-        self::$logger['fail']['fail_total']++;
+        ++self::$logger['fail']['fail_total'];
         self::$logger['success'] = self::$logger['total'] - self::$logger['fail']['fail_total'];
         array_push(self::$logger['fail']['fail_import_rules'], $this->dataCode.' '.$message);
     }
@@ -65,7 +64,7 @@ class Logger
      */
     public function failBrokenDataLog($message)
     {
-        self::$logger['fail']['fail_total']++;
+        ++self::$logger['fail']['fail_total'];
         self::$logger['success'] = self::$logger['total'] - self::$logger['fail']['fail_total'];
         array_push(self::$logger['fail']['fail_broken_data'], $this->dataCode.' '.$message);
     }
