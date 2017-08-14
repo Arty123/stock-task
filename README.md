@@ -20,5 +20,7 @@ my script creates new Product and insert it into DB.
 And another question:
 I noticed that cost in the CSV in GBP, but in task before price values stands symbol "$".
 Is it mistake or I need to convert currency?
+
+I didn't create a new bundle, because it is not necessary. Used automaticly generated AppBundle.  
  
        
