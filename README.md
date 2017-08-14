@@ -4,6 +4,15 @@ Symfony 2.8 console application
 Itransition task
 ========================
 
+install
+```sh
+git clone
+composer install 
+php app/console doc:sch:update --force
+php app/console stock:task --test=1
+php app/console stock:task
+```
+
 There were a few troubles, when I analyzed CSV file:
 - Some items don't have stock value (among them P0007). It means that stock level contains an empty string.
 - The price of some items contains symbol '$' (P0015).
