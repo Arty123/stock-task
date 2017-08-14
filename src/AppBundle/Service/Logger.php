@@ -50,7 +50,7 @@ class Logger
     }
 
     /**
-     * Log fail rules item.
+     * @param $message
      */
     public function failImportRulesLog($message)
     {
@@ -60,7 +60,7 @@ class Logger
     }
 
     /**
-     * Log broken data item.
+     * @param $message
      */
     public function failBrokenDataLog($message)
     {
