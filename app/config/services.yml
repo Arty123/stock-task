@@ -18,3 +18,11 @@ services:
     app.converter:
         class:     AppBundle\Service\Converter
         arguments: []
+
+    app.output.command.helper:
+        class:     AppBundle\Util\OutputCommandHelper
+        arguments: []
+
+    app.data.manager:
+        class:     AppBundle\Util\DataManager
+        arguments: ['@doctrine.orm.entity_manager', '@app.converter']

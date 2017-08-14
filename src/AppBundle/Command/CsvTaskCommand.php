@@ -2,8 +2,6 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\Service\Converter;
-use AppBundle\Service\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,7 +9,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Helper\Table;
-use AppBundle\Entity\ProductData;
 
 /**
  * Class CsvTaskCommand.
@@ -43,143 +40,6 @@ class CsvTaskCommand extends ContainerAwareCommand
     }
 
     /**
-     * Create two columns for output table.
-     *
-     * @param Logger $logger
-     *
-     * @return array
-     */
-    private function getFailItemsTableBody(Logger $logger)
-    {
-        $tempArray = [];
-        $failImportRulesArray = $logger::$logger['fail']['fail_import_rules'];
-        $failBrokenDataArray = $logger::$logger['fail']['fail_broken_data'];
-
-        // If first column more than second
-        if (count($failImportRulesArray) > count($failBrokenDataArray)) {
-            foreach ($failImportRulesArray as $item) {
-                // Create first column
-                array_push($tempArray, [$item]);
-            }
-
-            for ($i = 0; $i < count($tempArray); ++$i) {
-                if (!empty($failBrokenDataArray[$i])) {
-                    array_push($tempArray[$i], $failBrokenDataArray[$i]);
-                } else {
-                    array_push($tempArray[$i], '');
-                }
-            }
-        } else {
-            foreach ($failBrokenDataArray as $item) {
-                array_push($tempArray, [$item]);
-            }
-
-            for ($i = 0; $i < count($tempArray); ++$i) {
-                if (!empty($failImportRulesArray[$i])) {
-                    array_push($tempArray[$i], $failImportRulesArray[$i]);
-                } else {
-                    array_push($tempArray[$i], '');
-                }
-            }
-        }
-
-        return $tempArray;
-    }
-
-    /**
-     * @param Logger $logger
-     *
-     * @return array
-     */
-    private function getDiscountedItemsTableBody(Logger $logger)
-    {
-        $tempArray = [];
-        foreach ($logger::$logger['discounted_items'] as $item) {
-            array_push($tempArray, [$item]);
-        }
-
-        return $tempArray;
-    }
-
-    /**
-     * @param Converter $converter
-     * @param $testMode
-     * @param array $data
-     */
-    private function manageData(Converter $converter, $testMode, array $data)
-    {
-        // Define EntityManager
-        $em = $this->getContainer()->get('doctrine')->getManager();
-
-        // Convert charset of any string in data array
-        $converter->convertCharset($data);
-
-        // Find existing item in database
-        $productData = $em->getRepository('AppBundle:ProductData')
-            ->findOneBy([
-                'strProductCode' => $data[0],
-            ]);
-
-        // If item doesn't exist, create it
-        if (!$productData) {
-            $productData = new ProductData();
-        }
-
-        // Set item's properties
-        $productData->setStrProductCode($data[0]);
-        $productData->setStrProductName($data[1]);
-        $productData->setStrProductDesc($data[2]);
-        $productData->setIntStockLevel($data[3]);
-        $productData->setDecPrice($data[4]);
-
-        // Check discounted field
-        if ($data[5] == 'yes') {
-            $productData->setDtmDiscounted(new \DateTime('now'));
-        }
-
-        // Insert or update item if testMode off
-        if (!$testMode) {
-            $em->persist($productData);
-            $em->flush();
-        }
-    }
-
-    /**
-     * @param OutputInterface $output
-     * @param Table           $table
-     * @param Logger          $logger
-     */
-    private function printTables(OutputInterface $output, Table $table, Logger $logger)
-    {
-        // Rendering results total
-        $output->writeln('');
-        $table
-            ->setHeaders(['Total', 'Fail', 'Success'])
-            ->setRows([
-                [
-                    $logger::$logger['total'], $logger::$logger['fail']['fail_total'], $logger::$logger['success'],
-                ],
-            ]);
-        $table->render();
-
-        // Rendering detail results
-        $tableBody = $this->getFailItemsTableBody($logger);
-        $output->writeln('');
-        $table
-            ->setHeaders(['Fail Import Rules', 'Fail Validate data'])
-            ->setRows($tableBody);
-        $table->render();
-
-        // Rendering detail results
-        $tableBody = $this->getDiscountedItemsTableBody($logger);
-        $output->writeln('');
-        $table
-            ->setHeaders(['Discounted Items'])
-            ->setRows($tableBody);
-        $table->render();
-    }
-
-    /**
      * @param InputInterface  $input
      * @param OutputInterface $output
      */
@@ -191,7 +51,8 @@ class CsvTaskCommand extends ContainerAwareCommand
         // Define services
         $validator = $this->getContainer()->get('app.validator');
         $logger = $this->getContainer()->get('app.logger');
-        $converter = $this->getContainer()->get('app.converter');
+        $outputHelper = $this->getContainer()->get('app.output.command.helper');
+        $dataManager = $this->getContainer()->get('app.data.manager');
 
         // Variable
         $pathToFile = __DIR__.'/../../../web/uploads/documents/stock.csv';
@@ -221,7 +82,7 @@ class CsvTaskCommand extends ContainerAwareCommand
 
                     // Initialize validator with current data and check
                     if ($validator->init($data) && $validator->validateImportRules()) {
-                        $this->manageData($converter, $testMode, $data);
+                        $dataManager->manageData($testMode, $data);
                     }
                 }
                 // Inc count of row
@@ -233,7 +94,7 @@ class CsvTaskCommand extends ContainerAwareCommand
         }
 
         // Print tables
-        $this->printTables($output, $table, $logger);
+        $outputHelper->printTables($output, $table, $logger);
 
         $output->writeln('');
         $output->writeln('<info>Done!</info>');
