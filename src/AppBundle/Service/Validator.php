@@ -114,13 +114,13 @@ class Validator implements ValidatorInterface
     {
         if (count($data) != 6) {
             $this->logger->failBrokenDataLog(self::MESSAGES['broken_data']['fail_count']);
-
+ 
             return false;
-        } elseif (strpos($data[4], '$') !== false) {
+        } elseif (filter_var($data[4], FILTER_VALIDATE_FLOAT) === false) {
             $this->logger->failBrokenDataLog(self::MESSAGES['broken_data']['fail_price']);
 
             return false;
-        } elseif ($data[3] == '') {
+        } elseif (filter_var($data[3], FILTER_VALIDATE_INT) === false) {
             $this->logger->failBrokenDataLog(self::MESSAGES['broken_data']['fail_stock']);
 
             return false;
