@@ -72,12 +72,13 @@ class OutputCommandHelper
     }
 
     /**
-     * @param Output $output
-     * @param Table $table
      * @param Logger $logger
      */
-    public function printTables(Output $output, Table $table, Logger $logger)
+    public function printTables(Logger $logger)
     {
+        $output = new Output();
+        $table = new Table($output);
+
         // Rendering results total
         $output->writeln('');
         $table

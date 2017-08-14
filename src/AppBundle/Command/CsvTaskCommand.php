@@ -8,7 +8,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Helper\Table;
 
 /**
  * Class CsvTaskCommand.
@@ -62,9 +61,6 @@ class CsvTaskCommand extends ContainerAwareCommand
         $progress = new ProgressBar($output, $FILE_SIZE);
         $progress->setFormat('debug');
 
-        // Enabling table class
-        $table = new Table($output);
-
         // Equals 1, because 0 row contain headers of table
         $row = 1;
 
@@ -94,7 +90,7 @@ class CsvTaskCommand extends ContainerAwareCommand
         }
 
         // Print tables
-        $outputHelper->printTables($output, $table, $logger);
+        $outputHelper->printTables($logger);
 
         $output->writeln('');
         $output->writeln('<info>Done!</info>');
