@@ -12,6 +12,18 @@ use AppBundle\Entity\ProductData;
  */
 class DataManager
 {
+    const CODE = 0;
+
+    const NAME = 1;
+
+    const DESCRIPTION = 2;
+
+    const STOCK = 3;
+
+    const PRICE = 4;
+
+    const DISCOUNTED = 5;
+
     /**
      * @var EntityManager
      */
@@ -56,14 +68,14 @@ class DataManager
         }
 
         // Set item's properties
-        $productData->setStrProductCode($data[0]);
-        $productData->setStrProductName($data[1]);
-        $productData->setStrProductDesc($data[2]);
-        $productData->setIntStockLevel($data[3]);
-        $productData->setDecPrice($data[4]);
+        $productData->setStrProductCode($data[self::CODE]);
+        $productData->setStrProductName($data[self::NAME]);
+        $productData->setStrProductDesc($data[self::DESCRIPTION]);
+        $productData->setIntStockLevel($data[self::STOCK]);
+        $productData->setDecPrice($data[self::PRICE]);
 
         // Check discounted field
-        if ($data[5] == 'yes') {
+        if ($data[self::DISCOUNTED] == 'yes') {
             $productData->setDtmDiscounted(new \DateTime('now'));
         }
 
