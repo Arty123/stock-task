@@ -5,8 +5,7 @@ namespace AppBundle\Service;
 use AppBundle\ServiceInterface\ValidatorInterface;
 
 /**
- * Class Validator
- * @package AppBundle\Service
+ * Class Validator.
  */
 class Validator implements ValidatorInterface
 {
@@ -95,12 +94,12 @@ class Validator implements ValidatorInterface
             $this->logger->failImportRulesLog(self::MESSAGES['import_rules']['first_case']);
 
             return false;
-        // Second Case
+            // Second Case
         } elseif (($this->dataPrice >= 1000)) {
             $this->logger->failImportRulesLog(self::MESSAGES['import_rules']['second_case']);
 
             return false;
-        // Discounted items check
+            // Discounted items check
         } elseif ($this->dataDiscounted == 'yes') {
             $this->logger->discountedItemsLog();
         }
@@ -124,12 +123,12 @@ class Validator implements ValidatorInterface
             $this->logger->failBrokenDataLog(self::MESSAGES['broken_data']['fail_count']);
 
             return false;
-        // Validate price
+            // Validate price
         } elseif (filter_var($data[4], FILTER_VALIDATE_FLOAT) === false) {
             $this->logger->failBrokenDataLog(self::MESSAGES['broken_data']['fail_price']);
 
             return false;
-        // Validate stock level
+            // Validate stock level
         } elseif (filter_var($data[3], FILTER_VALIDATE_INT) === false) {
             $this->logger->failBrokenDataLog(self::MESSAGES['broken_data']['fail_stock']);
 
