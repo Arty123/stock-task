@@ -55,14 +55,13 @@ class CsvTaskCommand extends ContainerAwareCommand
 
         // Variable
         $pathToFile = __DIR__.'/../../../web/uploads/documents/stock.csv';
+        // Equals 1, because 0 row contain headers of table
+        $row = 1;
 
         // Enabling progress bar
         $FILE_SIZE = filesize($pathToFile);
         $progress = new ProgressBar($output, $FILE_SIZE);
         $progress->setFormat('debug');
-
-        // Equals 1, because 0 row contain headers of table
-        $row = 1;
 
         $output->writeln('<info>Run Task</info>');
 
@@ -70,7 +69,6 @@ class CsvTaskCommand extends ContainerAwareCommand
         if (($handle = fopen($pathToFile, 'r')) !== false) {
             while (($data = fgetcsv($handle, null, ',')) !== false) {
                 $progress->advance($handle);
-
                 // Start from second row, because first row does not contain any data
                 if ($row > 1) {
                     // Always log any data, even not valid
@@ -84,7 +82,7 @@ class CsvTaskCommand extends ContainerAwareCommand
                 // Inc count of row
                 ++$row;
             }
-
+            
             $progress->finish();
             fclose($handle);
         }
