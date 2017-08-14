@@ -16,5 +16,9 @@ UTF-8 characters. And so I converted them into ASCII and got '?' symbol, then I 
 
 A added unique index on productCode field in database, but my script always search existing item in database and get it for updating. If it doesn't exist, 
 my script creates new Product and insert it into DB.
+
+And another question:
+I noticed that cost in the CSV in GBP, but in task before price values stands symbol "$".
+Is it mistake or I need to convert currency?
  
        
