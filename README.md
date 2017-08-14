@@ -15,6 +15,6 @@ But also there were few elements with wrong charset (P0001, P0016). All of symbo
 UTF-8 characters. And so I converted them into ASCII and got '?' symbol, then I inserted them into DB.
 
 A added unique index on productCode field in database, but my script always search existing item in database and get it for updating. If it doesn't exist, 
-my script creates create new Product entity and insert it into DB.
+my script creates new Product and insert it into DB.
  
        
