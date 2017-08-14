@@ -94,7 +94,7 @@ class OutputCommandHelper
         $tableBody = $this->getFailItemsTableBody($logger);
         $output->writeln('');
         $table
-            ->setHeaders(['Fail Import Rules', 'Fail Validate data'])
+            ->setHeaders(['Fail Validate data', 'Fail Import Rules'])
             ->setRows($tableBody);
         $table->render();
 
