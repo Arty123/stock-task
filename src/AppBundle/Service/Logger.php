@@ -1,14 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: a.abelyan
- * Date: 11.08.2017
- * Time: 11:23.
- */
 
 namespace AppBundle\Service;
 
-class Logger
+use AppBundle\ServiceInterface\LoggerInterface;
+
+/**
+ * Class Logger
+ * @package AppBundle\Service
+ */
+class Logger implements LoggerInterface
 {
     /**
      * @var array

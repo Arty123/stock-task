@@ -1,14 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: a.abelyan
- * Date: 10.08.2017
- * Time: 18:57.
- */
 
 namespace AppBundle\Service;
 
-class Validator
+use AppBundle\ServiceInterface\ValidatorInterface;
+
+/**
+ * Class Validator
+ * @package AppBundle\Service
+ */
+class Validator implements ValidatorInterface
 {
     const MESSAGES = [
         'import_rules' => [

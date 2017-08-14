@@ -5,6 +5,10 @@ namespace AppBundle\Test\Service;
 use AppBundle\Service\Logger;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class LoggerTest
+ * @package AppBundle\Test\Service
+ */
 class LoggerTest extends TestCase
 {
     private $logger;

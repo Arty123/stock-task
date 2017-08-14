@@ -5,6 +5,10 @@ namespace AppBundle\Test\Service;
 use AppBundle\Service\Converter;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class ConverterTest
+ * @package AppBundle\Test\Service
+ */
 class ConverterTest extends TestCase
 {
     private $converter;

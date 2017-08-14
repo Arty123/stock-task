@@ -6,6 +6,10 @@ use AppBundle\Service\Validator;
 use AppBundle\Service\Logger;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class ValidatorTest
+ * @package AppBundle\Test\Service
+ */
 class ValidatorTest extends TestCase
 {
 

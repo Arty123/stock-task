@@ -2,6 +2,10 @@
 
 namespace AppBundle\Service;
 
+/**
+ * Class Converter
+ * @package AppBundle\Service
+ */
 class Converter
 {
     /**
