@@ -90,14 +90,17 @@ class Validator implements ValidatorInterface
      */
     public function validateImportRules()
     {
+        // First case
         if (($this->dataPrice <= 5 && $this->dataStock <= 10)) {
             $this->logger->failImportRulesLog(self::MESSAGES['import_rules']['first_case']);
 
             return false;
+        // Second Case
         } elseif (($this->dataPrice >= 1000)) {
             $this->logger->failImportRulesLog(self::MESSAGES['import_rules']['second_case']);
 
             return false;
+        // Discounted items check
         } elseif ($this->dataDiscounted == 'yes') {
             $this->logger->discountedItemsLog();
         }
@@ -112,14 +115,21 @@ class Validator implements ValidatorInterface
      */
     private function validateBrokenData(array $data)
     {
+        // This method use access for data items by indexes,
+        // because it execute in $this->init() method,
+        // before setting up current object properties
+
+        // Validate count of elements
         if (count($data) != 6) {
             $this->logger->failBrokenDataLog(self::MESSAGES['broken_data']['fail_count']);
 
             return false;
+        // Validate price
         } elseif (filter_var($data[4], FILTER_VALIDATE_FLOAT) === false) {
             $this->logger->failBrokenDataLog(self::MESSAGES['broken_data']['fail_price']);
 
             return false;
+        // Validate stock level
         } elseif (filter_var($data[3], FILTER_VALIDATE_INT) === false) {
             $this->logger->failBrokenDataLog(self::MESSAGES['broken_data']['fail_stock']);
 
