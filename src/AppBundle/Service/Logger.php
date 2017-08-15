@@ -5,8 +5,7 @@ namespace AppBundle\Service;
 use AppBundle\ServiceInterface\LoggerInterface;
 
 /**
- * Class Logger
- * @package AppBundle\Service
+ * Class Logger.
  */
 class Logger implements LoggerInterface
 {

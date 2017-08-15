@@ -7,12 +7,10 @@ use AppBundle\Service\Logger;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class ValidatorTest
- * @package AppBundle\Test\Service
+ * Class ValidatorTest.
  */
 class ValidatorTest extends TestCase
 {
-
     private $validator;
 
     private $logger;

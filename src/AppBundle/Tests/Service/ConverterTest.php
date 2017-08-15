@@ -6,8 +6,7 @@ use AppBundle\Service\Converter;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class ConverterTest
- * @package AppBundle\Test\Service
+ * Class ConverterTest.
  */
 class ConverterTest extends TestCase
 {

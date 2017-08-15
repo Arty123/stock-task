@@ -6,8 +6,7 @@ use AppBundle\Service\Logger;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class LoggerTest
- * @package AppBundle\Test\Service
+ * Class LoggerTest.
  */
 class LoggerTest extends TestCase
 {

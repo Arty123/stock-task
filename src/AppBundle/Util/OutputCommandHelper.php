@@ -7,8 +7,7 @@ use Symfony\Component\Console\Helper\Table as Table;
 use Symfony\Component\Console\Output\ConsoleOutput as Output;
 
 /**
- * Class OutputCommandHelper
- * @package AppBundle\Util
+ * Class OutputCommandHelper.
  */
 class OutputCommandHelper
 {

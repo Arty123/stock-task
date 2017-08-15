@@ -7,8 +7,7 @@ use Doctrine\ORM\EntityManager as EntityManager;
 use AppBundle\Entity\ProductData;
 
 /**
- * Class DataManager
- * @package AppBundle\Util
+ * Class DataManager.
  */
 class DataManager
 {
@@ -36,8 +35,9 @@ class DataManager
 
     /**
      * DataManager constructor.
+     *
      * @param EntityManager $em
-     * @param Converter $converter
+     * @param Converter     $converter
      */
     public function __construct(EntityManager $em, Converter $converter)
     {
