@@ -4,7 +4,6 @@ namespace AppBundle\Service;
 
 use AppBundle\Service\Converter as Converter;
 use Doctrine\ORM\EntityManager as EntityManager;
-use AppBundle\Entity\ProductData;
 
 /**
  * Class DataManager.
