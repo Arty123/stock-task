@@ -3,6 +3,7 @@
 namespace AppBundle\Test\Service;
 
 use AppBundle\Service\Logger;
+use AppBundle\Service\DataConfig;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -12,9 +13,12 @@ class LoggerTest extends TestCase
 {
     private $logger;
 
+    private $dataConfig;
+
     public function setUp()
     {
-        $this->logger = new Logger();
+        $this->dataConfig = new DataConfig();
+        $this->logger = new Logger($this->dataConfig);
     }
 
     public function tearDown()

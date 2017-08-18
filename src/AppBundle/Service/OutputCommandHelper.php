@@ -1,8 +1,7 @@
 <?php
 
-namespace AppBundle\Util;
+namespace AppBundle\Service;
 
-use AppBundle\Service\Logger;
 use Symfony\Component\Console\Helper\Table as Table;
 use Symfony\Component\Console\Output\ConsoleOutput as Output;
 

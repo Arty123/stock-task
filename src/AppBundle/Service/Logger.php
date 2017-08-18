@@ -29,12 +29,27 @@ class Logger implements LoggerInterface
     private $dataCode;
 
     /**
+     * @var DataConfig
+     */
+    private $dataConfig;
+
+    /**
+     * Logger constructor.
+     * @param DataConfig $dataConfig
+     */
+    public function __construct(DataConfig $dataConfig)
+    {
+        $this->dataConfig = $dataConfig;
+    }
+
+    /**
      * @param array $data
+     * @return bool
      */
     public function init(array $data)
     {
         if (isset($data)) {
-            $this->dataCode = $data[0];
+            $this->dataCode = $data[$this->dataConfig->getCode()];
             $this->increaseTotal();
         }
     }

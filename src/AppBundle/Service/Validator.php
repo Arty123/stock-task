@@ -11,15 +11,21 @@ class Validator implements ValidatorInterface
 {
     const MESSAGES = [
         'import_rules' => [
-            'first_case' => 'price less than 5 and stock level less than 10',
-            'second_case' => 'price more than 1000',
+            'first_case'    => 'price less than 5 and stock level less than 10',
+            'second_case'   => 'price more than 1000',
         ],
         'broken_data' => [
-            'fail_count' => 'count of items not equals 6',
-            'fail_price' => 'price contains unexpected symbol',
-            'fail_stock' => 'stock level is not defined',
+            'fail_count'    => 'count of items not equals 6',
+            'fail_unique'   => 'not unique productCode',
+            'fail_price'    => 'price contains unexpected symbol',
+            'fail_stock'    => 'stock level is not defined',
         ],
     ];
+
+    /**
+     * @var DataConfig
+     */
+    private $dataConfig;
 
     /**
      * @var
@@ -47,18 +53,26 @@ class Validator implements ValidatorInterface
     private $dataDiscounted;
 
     /**
+     * @var array
+     */
+    private static $passedItems = [];
+
+    /**
      * @var Logger
      */
-    protected $logger;
+    private $logger;
 
     /**
      * Validator constructor.
-     *
      * @param Logger $logger
+     * @param DataConfig $dataConfig
      */
-    public function __construct(Logger $logger)
+    public function __construct(Logger $logger, DataConfig $dataConfig)
     {
+        // Define logger
         $this->logger = $logger;
+        // Define Data Config
+        $this->dataConfig = $dataConfig;
     }
 
     /**
@@ -73,10 +87,13 @@ class Validator implements ValidatorInterface
         // Valid csv row have to contain 6 fields
         if (isset($data) && $this->validateBrokenData($data)) {
             $this->data = $data;
-            $this->dataCode = $data[0];
-            $this->dataPrice = (float) $data[4];
-            $this->dataStock = (int) $data[3];
-            $this->dataDiscounted = $data[5];
+            $this->dataCode = $data[$this->dataConfig->getCode()];
+            $this->dataPrice = (float) $data[$this->dataConfig->getPrice()];
+            $this->dataStock = (int) $data[$this->dataConfig->getStock()];
+            $this->dataDiscounted = $data[$this->dataConfig->getDiscounted()];
+
+            // Set item as passed from validator
+            $this->setPassedItems($this->dataCode);
 
             return true;
         }
@@ -123,18 +140,52 @@ class Validator implements ValidatorInterface
             $this->logger->failBrokenDataLog(self::MESSAGES['broken_data']['fail_count']);
 
             return false;
-            // Validate price
-        } elseif (filter_var($data[4], FILTER_VALIDATE_FLOAT) === false) {
+        // Validate unique productCode
+        } elseif ($this->checkUniquePassedItem($data[$this->dataConfig->getCode()])) {
+            $this->logger->failBrokenDataLog(self::MESSAGES['broken_data']['fail_unique']);
+
+            return false;
+        // Validate price
+        } elseif (filter_var($data[$this->dataConfig->getPrice()], FILTER_VALIDATE_FLOAT) === false) {
             $this->logger->failBrokenDataLog(self::MESSAGES['broken_data']['fail_price']);
 
             return false;
             // Validate stock level
-        } elseif (filter_var($data[3], FILTER_VALIDATE_INT) === false) {
+        } elseif (filter_var($data[$this->dataConfig->getStock()], FILTER_VALIDATE_INT) === false) {
             $this->logger->failBrokenDataLog(self::MESSAGES['broken_data']['fail_stock']);
 
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * @param $productCode
+     */
+    private function setPassedItems($productCode)
+    {
+        array_push(self::$passedItems, $productCode);
+    }
+
+    /**
+     * @return array
+     */
+    public function getPassedItems()
+    {
+        return self::$passedItems;
+    }
+
+    /**
+     * @param $productCode
+     * @return bool
+     */
+    private function checkUniquePassedItem($productCode)
+    {
+        if (in_array($productCode, self::$passedItems)) {
+            return true;
+        }
+
+        return false;
     }
 }

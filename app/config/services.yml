@@ -7,22 +7,26 @@ services:
     #service_name:
     #    class: AppBundle\Directory\ClassName
     #    arguments: ['@another_service_name', 'plain_value', '%parameter_name%']
+    app.data.config:
+        class: AppBundle\Service\DataConfig
+        arguments: []
+
     app.logger:
         class:     AppBundle\Service\Logger
-        arguments: []
+        arguments: ['@app.data.config']
 
     app.validator:
         class:     AppBundle\Service\Validator
-        arguments: ['@app.logger']
+        arguments: ['@app.logger', '@app.data.config']
 
     app.converter:
         class:     AppBundle\Service\Converter
         arguments: []
 
     app.output.command.helper:
-        class:     AppBundle\Util\OutputCommandHelper
+        class:     AppBundle\Service\OutputCommandHelper
         arguments: []
 
     app.data.manager:
-        class:     AppBundle\Util\DataManager
-        arguments: ['@doctrine.orm.entity_manager', '@app.converter']
+        class:     AppBundle\Service\DataManager
+        arguments: ['@doctrine.orm.entity_manager', '@app.converter', '@app.data.config']
