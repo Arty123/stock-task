@@ -27,12 +27,18 @@ class DataManager
     private $dataConfig;
 
     /**
+     * @var ProductDataBuilder
+     */
+    private $builder;
+
+    /**
      * DataManager constructor.
      * @param EntityManager $em
-     * @param Converter $converter
+     * @param \AppBundle\Service\Converter $converter
      * @param DataConfig $dataConfig
+     * @param ProductDataBuilder $builder
      */
-    public function __construct(EntityManager $em, Converter $converter, DataConfig $dataConfig)
+    public function __construct(EntityManager $em, Converter $converter, DataConfig $dataConfig, ProductDataBuilder $builder)
     {
         // Define EntityManager
         $this->em = $em;
@@ -40,6 +46,8 @@ class DataManager
         $this->converter = $converter;
         // Define data configuration
         $this->dataConfig = $dataConfig;
+        // Define builder
+        $this->builder = $builder;
     }
 
     /**
@@ -51,19 +59,19 @@ class DataManager
         // Convert charset of any string in data array
         $this->converter->convertCharset($data);
 
-        $productData = new ProductData();
-
         // Set item's properties
-        $productData->setProductCode($data[$this->dataConfig->getCode()]);
-        $productData->setProductName($data[$this->dataConfig->getName()]);
-        $productData->setProductDesc($data[$this->dataConfig->getDescription()]);
-        $productData->setStockLevel($data[$this->dataConfig->getStock()]);
-        $productData->setPrice($data[$this->dataConfig->getPrice()]);
+        $this->builder->productCode = $data[$this->dataConfig->getCode()];
+        $this->builder->productName = $data[$this->dataConfig->getName()];
+        $this->builder->productDesc = $data[$this->dataConfig->getDescription()];
+        $this->builder->stockLevel = $data[$this->dataConfig->getStock()];
+        $this->builder->price = $data[$this->dataConfig->getPrice()];
 
         // Check discounted field
         if ($data[$this->dataConfig->getDiscounted()] == 'yes') {
-            $productData->setDiscounted(new \DateTime('now'));
+            $this->builder->discounted = new \DateTime('now');
         }
+
+        $productData = $this->builder->build();
 
         // Insert or update item if testMode off
         if (!$testMode) {

@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use AppBundle\Service\ProductDataBuilder;
 
 /**
  * ProductData
@@ -81,196 +82,16 @@ class ProductData
     private $price;
 
     /**
-     * Get id
-     *
-     * @return integer 
+     * ProductData constructor.
+     * @param ProductDataBuilder $builder
      */
-    public function getId()
+    public function __construct(ProductDataBuilder $builder)
     {
-        return $this->id;
-    }
-
-    /**
-     * Set productName
-     *
-     * @param string $productName
-     * @return ProductData
-     */
-    public function setProductName($productName)
-    {
-        $this->productName = $productName;
-
-        return $this;
-    }
-
-    /**
-     * Get productName
-     *
-     * @return string 
-     */
-    public function getProductName()
-    {
-        return $this->productName;
-    }
-
-    /**
-     * Set productDesc
-     *
-     * @param string $productDesc
-     * @return ProductData
-     */
-    public function setProductDesc($productDesc)
-    {
-        $this->productDesc = $productDesc;
-
-        return $this;
-    }
-
-    /**
-     * Get productDesc
-     *
-     * @return string 
-     */
-    public function getProductDesc()
-    {
-        return $this->productDesc;
-    }
-
-    /**
-     * Set productCode
-     *
-     * @param string $productCode
-     * @return ProductData
-     */
-    public function setProductCode($productCode)
-    {
-        $this->productCode = $productCode;
-
-        return $this;
-    }
-
-    /**
-     * Get productCode
-     *
-     * @return string 
-     */
-    public function getProductCode()
-    {
-        return $this->productCode;
-    }
-
-    /**
-     * Set added
-     *
-     * @param \DateTime $added
-     * @return ProductData
-     */
-    public function setAdded($added)
-    {
-        $this->added = $added;
-
-        return $this;
-    }
-
-    /**
-     * Get added
-     *
-     * @return \DateTime 
-     */
-    public function getAdded()
-    {
-        return $this->added;
-    }
-
-    /**
-     * Set discounted
-     *
-     * @param \DateTime $discounted
-     * @return ProductData
-     */
-    public function setDiscounted($discounted)
-    {
-        $this->discounted = $discounted;
-
-        return $this;
-    }
-
-    /**
-     * Get discounted
-     *
-     * @return \DateTime 
-     */
-    public function getDiscounted()
-    {
-        return $this->discounted;
-    }
-
-    /**
-     * Set timestamp
-     *
-     * @param \DateTime $timestamp
-     * @return ProductData
-     */
-    public function setTimestamp($timestamp)
-    {
-        $this->timestamp = $timestamp;
-
-        return $this;
-    }
-
-    /**
-     * Get timestamp
-     *
-     * @return \DateTime 
-     */
-    public function getTimestamp()
-    {
-        return $this->timestamp;
-    }
-
-    /**
-     * Set stockLevel
-     *
-     * @param integer $stockLevel
-     * @return ProductData
-     */
-    public function setStockLevel($stockLevel)
-    {
-        $this->stockLevel = $stockLevel;
-
-        return $this;
-    }
-
-    /**
-     * Get stockLevel
-     *
-     * @return integer 
-     */
-    public function getStockLevel()
-    {
-        return $this->stockLevel;
-    }
-
-    /**
-     * Set price
-     *
-     * @param string $price
-     * @return ProductData
-     */
-    public function setPrice($price)
-    {
-        $this->price = $price;
-
-        return $this;
-    }
-
-    /**
-     * Get price
-     *
-     * @return string 
-     */
-    public function getPrice()
-    {
-        return $this->price;
+        $this->productCode = $builder->productCode;
+        $this->productName = $builder->productName;
+        $this->productDesc = $builder->productDesc;
+        $this->price = $builder->price;
+        $this->stockLevel = $builder->stockLevel;
+        $this->discounted = $builder->discounted;
     }
 }

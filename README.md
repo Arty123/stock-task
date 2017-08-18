@@ -9,8 +9,8 @@ install
 git clone
 composer install 
 php app/console doc:sch:update --force
-php app/console stock:task --test=1
-php app/console stock:task
+php app/console stock:task --path=web/uploads/documents/stock.csv --test=1
+php app/console stock:task --path=web/uploads/documents/stock.csv
 ```
 
 There were a few troubles, when I analyzed CSV file:
