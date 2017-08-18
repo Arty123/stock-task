@@ -1,12 +1,12 @@
 <?php
 
-namespace AppBundle\ServiceInterface;
+namespace AppBundle\Service\Contracts;
 
 /**
- * Interface LoggerInterface
+ * Interface ValidatorInterface
  * @package AppBundle\ServiceInterface
  */
-interface LoggerInterface
+interface ValidatorInterface
 {
     /**
      * @param array $data

@@ -2,7 +2,7 @@
 
 namespace AppBundle\Service;
 
-use AppBundle\ServiceInterface\LoggerInterface;
+use AppBundle\Service\Contracts\LoggerInterface;
 
 /**
  * Class Logger.

@@ -2,7 +2,7 @@
 
 namespace AppBundle\Service;
 
-use AppBundle\ServiceInterface\ValidatorInterface;
+use AppBundle\Service\Contracts\ValidatorInterface;
 
 /**
  * Class Validator.
