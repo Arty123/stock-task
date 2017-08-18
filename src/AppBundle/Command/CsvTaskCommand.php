@@ -25,6 +25,7 @@ class CsvTaskCommand extends ContainerAwareCommand
             ->setDescription('Task start')
             ->addArgument('id', InputArgument::OPTIONAL, 'Task id')
             ->addArgument('start', InputArgument::OPTIONAL, 'Start position')
+            // Test mode
             ->addOption(
                 'test',
                 null,
@@ -32,10 +33,30 @@ class CsvTaskCommand extends ContainerAwareCommand
                 'Test option',
                 0
             )
+            // Path to file option
+            ->addOption(
+                'path',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Path to file option'
+            )
             // the full command description shown when running the command with
             // the "--help" option
             ->setHelp('Run tasks in Entity Task')
         ;
+    }
+
+    /**
+     * @param $pathToFile
+     * @throws \Exception
+     */
+    private function checkFilePath($pathToFile)
+    {
+        if (!$pathToFile) {
+            throw new \Exception('You need to set path to file, in --path option (--path=/path/to/file)');
+        } elseif (!file_exists($pathToFile)) {
+            throw new \Exception('File not found in '.$pathToFile);
+        }
     }
 
     /**
@@ -46,6 +67,10 @@ class CsvTaskCommand extends ContainerAwareCommand
     {
         // Get options
         $testMode = $input->getOption('test');
+        $pathToFile = $input->getOption('path');
+
+        // Check file existing
+        $this->checkFilePath($pathToFile);
 
         // Define services
         $validator = $this->getContainer()->get('app.validator');
@@ -53,8 +78,6 @@ class CsvTaskCommand extends ContainerAwareCommand
         $outputHelper = $this->getContainer()->get('app.output.command.helper');
         $dataManager = $this->getContainer()->get('app.data.manager');
 
-        // Variable
-        $pathToFile = __DIR__.'/../../../web/uploads/documents/stock.csv';
         // Equals 1, because 0 row contain headers of table
         $row = 1;
 

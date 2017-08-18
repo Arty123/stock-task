@@ -59,7 +59,7 @@ class DataManager
         // Find existing item in database
         $productData = $this->em->getRepository('AppBundle:ProductData')
             ->findOneBy([
-                'strProductCode' => $data[0],
+                'productCode' => $data[0],
             ]);
 
         // If item doesn't exist, create it
@@ -68,15 +68,15 @@ class DataManager
         }
 
         // Set item's properties
-        $productData->setStrProductCode($data[self::CODE]);
-        $productData->setStrProductName($data[self::NAME]);
-        $productData->setStrProductDesc($data[self::DESCRIPTION]);
-        $productData->setIntStockLevel($data[self::STOCK]);
-        $productData->setDecPrice($data[self::PRICE]);
+        $productData->setProductCode($data[self::CODE]);
+        $productData->setProductName($data[self::NAME]);
+        $productData->setProductDesc($data[self::DESCRIPTION]);
+        $productData->setStockLevel($data[self::STOCK]);
+        $productData->setPrice($data[self::PRICE]);
 
         // Check discounted field
         if ($data[self::DISCOUNTED] == 'yes') {
-            $productData->setDtmDiscounted(new \DateTime('now'));
+            $productData->setDiscounted(new \DateTime('now'));
         }
 
         // Insert or update item if testMode off

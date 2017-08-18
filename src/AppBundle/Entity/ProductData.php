@@ -27,21 +27,21 @@ class ProductData
      *
      * @ORM\Column(name="product_name", type="string", length=50)
      */
-    private $strProductName;
+    private $productName;
 
     /**
      * @var string
      *
      * @ORM\Column(name="product_desc", type="string", length=255)
      */
-    private $strProductDesc;
+    private $productDesc;
 
     /**
      * @var string
      *
      * @ORM\Column(name="product_code", type="string", length=10, unique=true)
      */
-    private $strProductCode;
+    private $productCode;
 
     /**
      * @var \DateTime
@@ -49,14 +49,14 @@ class ProductData
      * @Gedmo\Timestampable(on="create")
      * @ORM\Column(name="added", type="datetime", nullable=true)
      */
-    private $dtmAdded;
+    private $added;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="discounted", type="datetime", nullable=true)
      */
-    private $dtmDiscounted;
+    private $discounted;
 
     /**
      * @var \DateTime
@@ -64,22 +64,21 @@ class ProductData
      * @Gedmo\Timestampable(on="update")
      * @ORM\Column(name="timestamp", type="datetime")
      */
-    private $stmTimestamp;
+    private $timestamp;
 
     /**
      * @var int
      *
      * @ORM\Column(name="stock_level", type="integer", nullable=true)
      */
-    private $intStockLevel;
+    private $stockLevel;
 
     /**
      * @var string
      *
      * @ORM\Column(name="price", type="decimal", precision=10, scale=2)
      */
-    private $decPrice;
-
+    private $price;
 
     /**
      * Get id
@@ -92,186 +91,186 @@ class ProductData
     }
 
     /**
-     * Set strProductName
+     * Set productName
      *
-     * @param string $strProductName
+     * @param string $productName
      * @return ProductData
      */
-    public function setStrProductName($strProductName)
+    public function setProductName($productName)
     {
-        $this->strProductName = $strProductName;
+        $this->productName = $productName;
 
         return $this;
     }
 
     /**
-     * Get strProductName
+     * Get productName
      *
      * @return string 
      */
-    public function getStrProductName()
+    public function getProductName()
     {
-        return $this->strProductName;
+        return $this->productName;
     }
 
     /**
-     * Set strProductDesc
+     * Set productDesc
      *
-     * @param string $strProductDesc
+     * @param string $productDesc
      * @return ProductData
      */
-    public function setStrProductDesc($strProductDesc)
+    public function setProductDesc($productDesc)
     {
-        $this->strProductDesc = $strProductDesc;
+        $this->productDesc = $productDesc;
 
         return $this;
     }
 
     /**
-     * Get strProductDesc
+     * Get productDesc
      *
      * @return string 
      */
-    public function getStrProductDesc()
+    public function getProductDesc()
     {
-        return $this->strProductDesc;
+        return $this->productDesc;
     }
 
     /**
-     * Set strProductCode
+     * Set productCode
      *
-     * @param string $strProductCode
+     * @param string $productCode
      * @return ProductData
      */
-    public function setStrProductCode($strProductCode)
+    public function setProductCode($productCode)
     {
-        $this->strProductCode = $strProductCode;
+        $this->productCode = $productCode;
 
         return $this;
     }
 
     /**
-     * Get strProductCode
+     * Get productCode
      *
      * @return string 
      */
-    public function getStrProductCode()
+    public function getProductCode()
     {
-        return $this->strProductCode;
+        return $this->productCode;
     }
 
     /**
-     * Set dtmAdded
+     * Set added
      *
-     * @param \DateTime $dtmAdded
+     * @param \DateTime $added
      * @return ProductData
      */
-    public function setDtmAdded($dtmAdded)
+    public function setAdded($added)
     {
-        $this->dtmAdded = $dtmAdded;
+        $this->added = $added;
 
         return $this;
     }
 
     /**
-     * Get dtmAdded
+     * Get added
      *
      * @return \DateTime 
      */
-    public function getDtmAdded()
+    public function getAdded()
     {
-        return $this->dtmAdded;
+        return $this->added;
     }
 
     /**
-     * Set dtmDiscounted
+     * Set discounted
      *
-     * @param \DateTime $dtmDiscounted
+     * @param \DateTime $discounted
      * @return ProductData
      */
-    public function setDtmDiscounted($dtmDiscounted)
+    public function setDiscounted($discounted)
     {
-        $this->dtmDiscounted = $dtmDiscounted;
+        $this->discounted = $discounted;
 
         return $this;
     }
 
     /**
-     * Get dtmDiscounted
+     * Get discounted
      *
      * @return \DateTime 
      */
-    public function getDtmDiscounted()
+    public function getDiscounted()
     {
-        return $this->dtmDiscounted;
+        return $this->discounted;
     }
 
     /**
-     * Set stmTimestamp
+     * Set timestamp
      *
-     * @param \DateTime $stmTimestamp
+     * @param \DateTime $timestamp
      * @return ProductData
      */
-    public function setStmTimestamp($stmTimestamp)
+    public function setTimestamp($timestamp)
     {
-        $this->stmTimestamp = $stmTimestamp;
+        $this->timestamp = $timestamp;
 
         return $this;
     }
 
     /**
-     * Get stmTimestamp
+     * Get timestamp
      *
      * @return \DateTime 
      */
-    public function getStmTimestamp()
+    public function getTimestamp()
     {
-        return $this->stmTimestamp;
+        return $this->timestamp;
     }
 
     /**
-     * Set intStockLevel
+     * Set stockLevel
      *
-     * @param integer $intStockLevel
+     * @param integer $stockLevel
      * @return ProductData
      */
-    public function setIntStockLevel($intStockLevel)
+    public function setStockLevel($stockLevel)
     {
-        $this->intStockLevel = $intStockLevel;
+        $this->stockLevel = $stockLevel;
 
         return $this;
     }
 
     /**
-     * Get intStockLevel
+     * Get stockLevel
      *
      * @return integer 
      */
-    public function getIntStockLevel()
+    public function getStockLevel()
     {
-        return $this->intStockLevel;
+        return $this->stockLevel;
     }
 
     /**
-     * Set decPrice
+     * Set price
      *
-     * @param string $decPrice
+     * @param string $price
      * @return ProductData
      */
-    public function setDecPrice($decPrice)
+    public function setPrice($price)
     {
-        $this->decPrice = $decPrice;
+        $this->price = $price;
 
         return $this;
     }
 
     /**
-     * Get decPrice
+     * Get price
      *
      * @return string 
      */
-    public function getDecPrice()
+    public function getPrice()
     {
-        return $this->decPrice;
+        return $this->price;
     }
 }
